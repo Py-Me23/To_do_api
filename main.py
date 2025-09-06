@@ -33,7 +33,7 @@ task_db = {
 class Task(BaseModel):
     tasktodo: str = Field(min_length=3, max_length=20)
     date_done: date
-    location: Optional[str] = None
+    location: str
 
 
 class TaskUpdate(Task):
@@ -72,15 +72,16 @@ def delete_task(tasktodo: str):
     return {"message": f"Successfully deleted task: {tasktodo}"}
 
 
-@app.put("/tasks")
-def update_user(task: Task):
-    tasktodo = task.tasktodo
-    task_db[tasktodo] = task.dict()
-    return {"message": f"Sucessfully updated task:{tasktodo}"}
+# @app.put("/tasks")
+# def update_user(task: Task):
+#     tasktodo = task.tasktodo
+#     task_db[tasktodo] = task.dict()
+#     return {"message": f"Sucessfully updated task:{tasktodo}"}
 
 
 @app.patch("/tasks")
 def update_task_partial(task: TaskUpdate):
     tasktodo = task.tasktodo
-    task_db[tasktodo].update(task.dict)
+    task_db[tasktodo].update(task.dict(exclude_unset=True))
+    # print("successfully updated")
     return {"message": f"Sucessfully updated task:{tasktodo}"}
